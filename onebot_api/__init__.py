@@ -5,7 +5,7 @@ from mcdreforged.api.decorator.new_thread import new_thread
 from mcdreforged.command.builder.nodes.arguments import *
 from mcdreforged.utils.serializer import Serializable
 
-from onebot_api.constants import DEFAULT_CONFIG, PREFIX, HELP_MESSAGE
+from onebot_api.constants import DEFAULT_CONFIG, PREFIX, HELP_MESSAGE, ID
 from onebot_api.ws import OneBotAPI
 
 api: OneBotAPI
@@ -31,9 +31,10 @@ def on_unload(server: PluginServerInterface):
 
 def reload(src: CommandSource):
     server = src.get_server()
-    server.broadcast("Reloading OneBot API...")
+    server.logger.info("Reloading OneBot API...")
+    src.reply("Reloading...")
     api.stop()
-    api.start()
+    server.reload_plugin(ID)
 
 
 def register_command(server: PluginServerInterface):
