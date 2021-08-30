@@ -1,6 +1,6 @@
 {
 	"id": "onebot_api",
-	"version": "0.1.0-alpha",
+	"version": "0.1.0-beta",
 	"name": "OneBot API",
 	"description": "OneBot in MCDReforged",
 	"author": [
