@@ -15,7 +15,6 @@ class Config(Serializable):
     url: str
 
 
-@new_thread("OneBot API")
 def on_load(server: PluginServerInterface, old):
     global api
     register_command(server)

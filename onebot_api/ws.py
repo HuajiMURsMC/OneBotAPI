@@ -44,6 +44,7 @@ class OneBotAPI:
             raise RuntimeError("Cannot invoke {} on the task executor thread".format(item))
         return lambda **params: self.call_api(item, **params)
     
+    @new_thread("OneBot API")
     def start(self) -> None:
         self.event_listener.start()
         self.ws.connect(self.url+PATHS.API)
