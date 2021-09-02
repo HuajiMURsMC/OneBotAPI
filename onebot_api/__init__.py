@@ -1,9 +1,7 @@
-from mcdreforged.plugin.server_interface import PluginServerInterface
-from mcdreforged.command.command_source import CommandSource
-from mcdreforged.command.builder.nodes.basic import Literal
+from mcdreforged.api.types import PluginServerInterface, CommandSource
 from mcdreforged.api.decorator.new_thread import new_thread
-from mcdreforged.command.builder.nodes.arguments import *
-from mcdreforged.utils.serializer import Serializable
+from mcdreforged.api.utils.serializer import Serializable
+from mcdreforged.api.command import *
 
 from onebot_api.constants import DEFAULT_CONFIG, PREFIX, HELP_MESSAGE, ID
 from onebot_api.ws import OneBotAPI

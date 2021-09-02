@@ -2,9 +2,8 @@ from typing import Union, Optional
 import time
 import json
 
-from mcdreforged.plugin.server_interface import ServerInterface
+from mcdreforged.api.types import ServerInterface, PluginEvent
 from mcdreforged.api.decorator.new_thread import new_thread
-from mcdreforged.plugin.plugin_event import PluginEvent
 import websocket
 
 from onebot_api.constants import ERROR_CODES, ID, PATHS
