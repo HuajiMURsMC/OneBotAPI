@@ -24,8 +24,9 @@ class OneBotAPI:
         while self.running:
             continue
 
-    @new_thread("OneBot API")
     def call_api(self, api: str, **params) -> Optional[dict]:
+        if self.server.is_on_executor_thread():
+            raise RuntimeError("Cannot invoke {} on the task executor thread".format(api))
         self.wait_till_all_finish()
         if self.will_stop:
             return
@@ -39,8 +40,6 @@ class OneBotAPI:
         return response
 
     def __getattr__(self, item: str):
-        if self.server.is_on_executor_thread():
-            raise RuntimeError("Cannot invoke {} on the task executor thread".format(item))
         return lambda **params: self.call_api(item, **params)
     
     @new_thread("OneBot API")
