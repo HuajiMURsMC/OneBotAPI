@@ -1,23 +1,20 @@
 from mcdreforged.api.types import PluginServerInterface, CommandSource
 from mcdreforged.api.decorator.new_thread import new_thread
-from mcdreforged.api.utils.serializer import Serializable
 from mcdreforged.api.command import *
 
-from onebot_api.constants import DEFAULT_CONFIG, PREFIX, HELP_MESSAGE, ID
+from onebot_api.constants import PREFIX, HELP_MESSAGE, ID, CONFIG, CONFIG_FILE
 from onebot_api.ws import OneBotAPI
 
 api: OneBotAPI
 
 
-class Config(Serializable):
-    url: str
-
-
 def on_load(server: PluginServerInterface, old):
     global api
     register_command(server)
-    config = server.load_config_simple("onebot_api.json", DEFAULT_CONFIG, in_data_folder=False, target_class=Config)
-    api = OneBotAPI(server.as_basic_server_interface(), config.url)
+    config = server.load_config_simple(
+        CONFIG_FILE, in_data_folder=False, target_class=CONFIG
+    )
+    api = OneBotAPI(server.as_basic_server_interface(), config.url, config.access_token)
     api.start()
 
 
@@ -36,10 +33,4 @@ def reload(src: CommandSource):
 
 def register_command(server: PluginServerInterface):
     server.register_help_message("{} reload".format(PREFIX), HELP_MESSAGE.RELOAD)
-    server.register_command(
-        Literal(PREFIX)
-        .then(
-            Literal("reload")
-            .runs(reload)
-        )
-    )
+    server.register_command(Literal(PREFIX).then(Literal("reload").runs(reload)))

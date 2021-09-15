@@ -10,7 +10,9 @@ from onebot_api.constants import ERROR_CODES, ID, PATHS
 
 
 class OneBotAPI:
-    def __init__(self, server: ServerInterface, ws_url: str):
+    def __init__(
+        self, server: ServerInterface, ws_url: str, access_token: Optional[str] = None
+    ):
         self.server = server
         self.url = ws_url
         self.should_stop = False
@@ -19,6 +21,9 @@ class OneBotAPI:
         self.ws = websocket.WebSocket()
         self.started = False
         self.will_stop = False
+        self.header = {}
+        if access_token is not None:
+            self.header["Authorization"] = "Bearer {}".format(access_token)
 
     def wait_till_all_finish(self) -> None:
         while self.running:
@@ -26,26 +31,32 @@ class OneBotAPI:
 
     def call_api(self, api: str, **params) -> Optional[dict]:
         if self.server.is_on_executor_thread():
-            raise RuntimeError("Cannot invoke {} on the task executor thread".format(api))
+            raise RuntimeError(
+                "Cannot invoke {} on the task executor thread".format(api)
+            )
         self.wait_till_all_finish()
         if self.will_stop:
             return
-        self.ws.send(json.dumps({
-            "action": api,
-            "params": params,
-        }))
+        self.ws.send(
+            json.dumps(
+                {
+                    "action": api,
+                    "params": params,
+                }
+            )
+        )
         response = json.loads(self.ws.recv())
-        if response['status'] == "failed":
-            raise ERROR_CODES[response['retcode']]
+        if response["status"] == "failed":
+            raise ERROR_CODES[response["retcode"]]
         return response
 
     def __getattr__(self, item: str):
         return lambda **params: self.call_api(item, **params)
-    
+
     @new_thread("OneBot API")
     def start(self) -> None:
         self.event_listener.start()
-        self.ws.connect(self.url+PATHS.API)
+        self.ws.connect(self.url + PATHS.API, header=self.header)
 
     def stop(self) -> bool:
         if not self.started:
@@ -72,11 +83,13 @@ class EventListener:
         content = _to_json(content)
         if not content:
             return
-        self.server.dispatch_event(PluginEvent(".".join((ID, "qq", content['post_type']))), (content,))
+        self.server.dispatch_event(
+            PluginEvent(".".join((ID, "qq", content["post_type"]))), (content,)
+        )
 
     @new_thread("OneBot API Event Listener")
     def start(self) -> None:
-        self.ws.connect(self.api.url+PATHS.EVENT)
+        self.ws.connect(self.api.url + PATHS.EVENT)
         while not self.should_stop:
             try:
                 self.tick()

@@ -11,7 +11,6 @@
 		"mcdreforged": ">=2.0.4"
 	},
 
-	"archive_name": "OneBotAPI-v{version}",
 	"resources": [
 		"LICENSE"
 	]
